@@ -3,24 +3,22 @@
 import { useState } from "react";
 import { FileUploader } from "./components/FileUploader";
 import { Summary } from "./components/Summary";
-// import { Loader } from "./components/Loader";
-BiLoader
 import { jsPDF } from "jspdf";
-import { BiLoader } from "react-icons/bi";
-import { Footer } from "./components/Footer";
-import { Header } from "./components/Header";
+import { BiLoader, BiLoaderCircle } from "react-icons/bi";
 
 export default function App() {
   const [summary, setSummary] = useState(null);
   const [keyPoints, setKeyPoints] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [wordLimit, setWordLimit] = useState(1000);
 
   const handleFileUpload = async (file) => {
     setIsLoading(true);
     setError(null);
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("wordLimit", wordLimit.toString());
 
     try {
       const response = await fetch("http://localhost:4000/upload", {
@@ -33,7 +31,7 @@ export default function App() {
       }
 
       const data = await response.json();
-      setSummary(data.summary);
+      setSummary(formatText(data.summary));
       setKeyPoints(data.keyPoints || []);
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -43,6 +41,10 @@ export default function App() {
     }
   };
 
+  const formatText = (text) => {
+    return text.replace(/\n/g, "\n\n"); // Ensuring paragraph breaks
+  };
+
   const handleDownloadPDF = () => {
     if (!summary) return;
 
@@ -50,7 +52,9 @@ export default function App() {
     doc.setFontSize(16);
     doc.text("PDF Summary", 10, 10);
     doc.setFontSize(12);
-    doc.text(summary, 10, 20, { maxWidth: 180 });
+    
+    const splitSummary = doc.splitTextToSize(summary, 180);
+    doc.text(splitSummary, 10, 20);
 
     if (keyPoints && keyPoints.length > 0) {
       doc.text("\nKey Points:", 10, doc.lastAutoTable?.finalY + 10 || 40);
@@ -63,13 +67,29 @@ export default function App() {
   };
 
   return (
-    <>
-    <Header />
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="w-full max-w-2xl bg-white shadow-lg rounded-3xl p-8">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
           PDF Summarizer
         </h1>
+
+        <div className="mb-4">
+          <label className="text-gray-700">Select Word Limit:</label>
+          <div className="flex gap-4 mt-2">
+            {[500, 1000, 3000, 5000].map((limit) => (
+              <label key={limit} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="wordLimit"
+                  value={limit}
+                  checked={wordLimit === limit}
+                  onChange={() => setWordLimit(limit)}
+                />
+                {limit} 
+              </label>
+            ))}
+          </div>
+        </div>
 
         <FileUploader onFileUpload={handleFileUpload} isLoading={isLoading} />
         
@@ -92,10 +112,7 @@ export default function App() {
             </button>
           </>
         )}
-      {/* <Footer /> */}
       </div>
     </div>
-    <Footer />
-    </>
   );
 }
