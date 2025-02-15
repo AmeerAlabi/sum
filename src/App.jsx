@@ -5,7 +5,6 @@ import { FileUploader } from "./components/FileUploader";
 import { Summary } from "./components/Summary";
 import { jsPDF } from "jspdf";
 import { BiLoader, BiLoaderCircle } from "react-icons/bi";
-import { Load } from "./components/Load";
 
 export default function App() {
   const [summary, setSummary] = useState(null);
@@ -22,7 +21,7 @@ export default function App() {
     formData.append("wordLimit", wordLimit.toString());
 
     try {
-      const response = await fetch("https://summary-backend.vercel.app/upload", {
+      const response = await fetch("http://localhost:4000/upload", {
         method: "POST",
         body: formData,
       });
@@ -45,7 +44,6 @@ export default function App() {
   const formatText = (text) => {
     return text.replace(/\n/g, "\n\n"); // Ensuring paragraph breaks
   };
-
   const handleDownloadPDF = () => {
     if (!summary) return;
 
@@ -91,11 +89,10 @@ export default function App() {
             ))}
           </div>
         </div>
-
         <FileUploader onFileUpload={handleFileUpload} isLoading={isLoading} />
-        
-        {isLoading && <Load />} 
-        
+
+        {isLoading && <BiLoader />} 
+
         {error && (
           <div className="mt-4 text-red-600 text-center bg-red-100 p-3 rounded-md">
             {error}
@@ -109,7 +106,7 @@ export default function App() {
               onClick={handleDownloadPDF}
               className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600 transition"
             >
-              Download as PDF
+              Download as PdF
             </button>
           </>
         )}
