@@ -1,7 +1,7 @@
 import { BiLoaderCircle } from "react-icons/bi";
 import { motion } from "framer-motion";
 
-function Load() {
+ export function Load() {
     return (
       <div className="flex justify-center items-center mt-4">
         <motion.div

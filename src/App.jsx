@@ -5,6 +5,7 @@ import { FileUploader } from "./components/FileUploader";
 import { Summary } from "./components/Summary";
 import { jsPDF } from "jspdf";
 import { BiLoader, BiLoaderCircle } from "react-icons/bi";
+import { Load } from "./components/Load";
 
 export default function App() {
   const [summary, setSummary] = useState(null);
@@ -93,7 +94,7 @@ export default function App() {
 
         <FileUploader onFileUpload={handleFileUpload} isLoading={isLoading} />
         
-        {isLoading && <BiLoader />} 
+        {isLoading && <Load />} 
         
         {error && (
           <div className="mt-4 text-red-600 text-center bg-red-100 p-3 rounded-md">
