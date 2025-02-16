@@ -21,7 +21,7 @@ export default function App() {
     formData.append("wordLimit", wordLimit.toString());
 
     try {
-      const response = await fetch("http://localhost:4000/upload", {
+      const response = await fetch("https://summary-backend.vercel.app/upload", {
         method: "POST",
         body: formData,
       });
